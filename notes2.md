@@ -1,23 +1,29 @@
-If backend has CORS enabled:
-
-    app.use(cors({
-    origin: "http://localhost:5173"
-    }));
-
-response contains header:
-
-    Access-Control-Allow-Origin: http://localhost:5173
-
-Backend is basically saying:
-
-“Yes, I allow 5173.”
+# Why we make a cluster and then connect it to MongoDB compass and then connect it to VsCode? 
+>   We create a Cluster to store the data, connect it to Compass to view/manage data easily, and connect it to VS Code so our app can use that data.
+         
+    Cluster → Actual online database
+    Compass → GUI to view/edit the database
+    VS Code → App code that connects to the cluster and performs CRUD
 
 
-The attacker cannot change your backend code.
-app.use(cors()) is written on your server, not in the browser.
+# Note:
+>   If backend has CORS enabled:
+
+        app.use(cors({
+        origin: "http://localhost:5173"
+        }));
+
+    response contains header:
+
+        Access-Control-Allow-Origin: http://localhost:5173
+
+    Backend is basically saying:
+
+    “Yes, I allow 5173.”
 
 
-
+    The attacker cannot change your backend code.
+    app.use(cors()) is written on your server, not in the browser.
 
 
 # What is Proxy?

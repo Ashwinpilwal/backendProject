@@ -34,7 +34,7 @@ const userSchema = mongoose.Schema(
         },
         watchHistory: [
             {
-                type: Schema.types.ObjectId,
+                type: mongoose.Schema.types.ObjectId,
                 ref: "Video"
             }
         ],
@@ -47,12 +47,12 @@ const userSchema = mongoose.Schema(
 
         }
     },
-    timestamps = true
+    {timestamps: true}
 )
 
-userSchema.pre("save", async function(next){
-    if(this.isModified("password")){
-        this.password = bcrypt.hash(this.password, 10)
+userSchema.pre("save", async function(next){   //Just before saving the user to the database, this function will run
+    if(this.isModified("password")){     //Check if the password field is modified, if yes then only hash the password, otherwise skip hashing
+        this.password = await bcrypt.hash(this.password, 10)
     }
     next()
 })
@@ -64,10 +64,10 @@ userSchema.methods.isPasswordCorrect = async function(password){
 userSchema.methods.generateAccessToken = function(){
     return jwt.sign(
         {
-            _id = this._id,
-            email = this.email,
-            username = this.username,
-            fullName = this.fullName
+            _id: this._id,
+            email: this.email,
+            username: this.username,
+            fullName: this.fullName
         },
         process.env.ACCESS_TOKEN_SECRET,
         {
@@ -77,7 +77,15 @@ userSchema.methods.generateAccessToken = function(){
 }
 
 userSchema.methods.generateRefreshToken = function(){
-
+    return jwt.sign(
+        {
+            _id: this._id,
+        },
+        process.env.REFRESH_TOKEN_SECRET,
+        {
+            expiresIn: process.env.REFRESH_TOKEN_EXPIRY
+        }
+    )
 }
 
 export const User = mongoose.model('User', userSchema)

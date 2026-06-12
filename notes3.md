@@ -110,3 +110,38 @@ this.message = "new message" -----> We can do this, only after super(...)
     Then create model: const User = mongoose.model("User", userSchema)
 
     Now User gets all of that.
+
+>   userSchema.pre("save", ...) 
+        means: Just before saving the user to the database, this function will run
+
+>   We can call schema methods from any file, as long as you have the User model and a document instance.
+    const user = await User.findOne({ username: "john" });
+
+    The variable user now contains only John's document:
+
+        {
+            _id: 2,
+            username: "john",
+            password: "xyz789"
+        }
+
+    When you call:
+
+        await user.save();
+        await user.isPasswordCorrect(password);
+
+
+# Note:
+>   We cannot use this. in arrow functions. To use this. we must use normal function: function(){}
+
+
+# How to import Another Schema into the Schema?
+
+    This Schema exists Somewhere: const videoSchema = mongoose.Schema(...)
+
+    watchHistory: [
+        {
+            type: Schema.types.ObjectId,
+            ref: "Video"
+        }
+    ],
