@@ -14,3 +14,43 @@
     It can verify using that secret
     
     Done.
+
+# Use of Payload in JWT?
+>   JWT contains a snapshot of the data at the time the token was created.
+    Common Flow:-    JWT -> get _id -> find user in DB -> get latest user data
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    Middleware be like: Jaane se pehle mujhse mil kar jaana 😂😂
+
+
+# why cb in multer?
+    const storage = multer.diskStorage({
+        destination: function(req, file, cb){
+                cb(null, '/public/temp')
+        },
+        filename: function(req, file, cb){
+                
+                cb.apply(null, file.fieldname)
+                console.log(file.filename)
+        }
+    })
+
+    Suppose Multer asks you: "Where should I save this file?"
+
+    You have to somehow tell Multer the answer.
+
+    One way could have been: return "/tmp/uploads";
+    But Multer's creators decided to use a callback instead.
+
+    So they say: "When you know the answer, call cb()."
+
+    Like this: cb(null, "/tmp/my-uploads");
+
+    which means: "No error, save it in /tmp/my-uploads."
