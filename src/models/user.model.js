@@ -34,7 +34,7 @@ const userSchema = mongoose.Schema(
         },
         watchHistory: [
             {
-                type: mongoose.Schema.types.ObjectId,
+                type: mongoose.Schema.Types.ObjectId,
                 ref: "Video"
             }
         ],
@@ -54,7 +54,7 @@ userSchema.pre("save", async function(next){   //Just before saving the user to 
     if(this.isModified("password")){     //Check if the password field is modified, if yes then only hash the password, otherwise skip hashing
         this.password = await bcrypt.hash(this.password, 10)
     }
-    next()
+    next
 })
 
 userSchema.methods.isPasswordCorrect = async function(password){
