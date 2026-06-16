@@ -19,16 +19,6 @@
 >   JWT contains a snapshot of the data at the time the token was created.
     Common Flow:-    JWT -> get _id -> find user in DB -> get latest user data
     
-    
-    
-    
-    
-    
-    
-    
-    
-    Middleware be like: Jaane se pehle mujhse mil kar jaana 😂😂
-
 
 # why cb in multer?
     const storage = multer.diskStorage({
@@ -54,3 +44,7 @@
     Like this: cb(null, "/tmp/my-uploads");
 
     which means: "No error, save it in /tmp/my-uploads."
+
+
+
+# Middleware is like: Jaane se pehle mujhse mil kar jaana 😂😂
