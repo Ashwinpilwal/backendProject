@@ -367,6 +367,9 @@ const updateAccountDetails = asyncHandler(async(req, res, next) => {
 
 const updateUserAvatar = asyncHandler( async(req, res, next) => {
 
+    // TODO: DELETE OLD COVER IMAGE IN CLOUDINARY
+
+
 // Getting avatar from frontend
     const avatarLocalPath = req.files?.avatar[0].path
     // console.log(req.files.avatar[0])
@@ -408,6 +411,8 @@ const updateUserAvatar = asyncHandler( async(req, res, next) => {
 
 
 const updateUserCoverImage = asyncHandler( async(req, res, next) => {
+
+    // TODO: DELETE OLD COVER IMAGE IN CLOUDINARY
 
 // Getting avatar from frontend
     const coverImageLocalPath = req.files?.coverImage[0].path
