@@ -267,6 +267,7 @@ const refreshAccessToken = asyncHandler( async(req, res, next) => {
         refreshToken: newRefreshToken
     } = await generateAccessAndRefreshToken(user._id);
 
+// adding new tokens to cookies and giving response
     res
     .status(200)
     .cookie("accessToken", newAccessToken, options)
@@ -284,5 +285,170 @@ const refreshAccessToken = asyncHandler( async(req, res, next) => {
 
 })
 
-export {registerUser, loginUser, logoutUser, refreshAccessToken}
+const changeCurrentPassword = asyncHandler( async(req, res, next) => {
+
+// Getting old and new password from user/frontend
+    const {oldPassword, newPassword} = req.body
+
+// Getting userData, to compare database stored password with frontend's oldPassword
+    const user = await User.findById(req.user?._id)
+    if(!user){
+        throw new ApiError("401", "User not found!")
+    }
+
+// Comparing the password
+    const isPasswordCorrect = await user.isPasswordCorrect(oldPassword)
+    if(!isPasswordCorrect){
+        throw new ApiError(400, "Password is incorrect!")
+    }
+
+// Making changes in the password
+
+    user.password = newPassword; //just before save pre hook will run from user.model
+
+    await user.save({validationBeforeSave: false})
+
+
+    //no need for return below tbh!
+    return res.status(200).json(
+        new ApiResponse(200, "Password Changed Successfully!")
+    )
+})
+
+const getCurrentUser = asyncHandler( async(req, res, next) => {
+
+    // if(!req.user){ //No need for this because if no user then auth.middleware will never do next()
+    //     throw new ApiError(400, "No Current User!")
+    // }
+
+// returning as it as, because middleware is already giving data...    
+    res.status(200).json(
+        new ApiResponse(
+            200,
+            {
+                "user": req.user
+            },
+            "User found Successfully!" 
+        )
+    )
+})
+
+const updateAccountDetails = asyncHandler(async(req, res, next) => {
+// Getting fullname and email from user/frontned
+    const {fullName, email} = req.body
+
+// Validating if atleast one of them is present
+    if(!fullName && !email){
+        throw new ApiError(400, "No input is present to be updated!")
+    }
+
+// Updating the user details
+    const updatedUser = await User.findByIdAndUpdate(
+        req.user._id,
+        {
+            $set:{
+                fullName: fullName,
+                email: email
+            }
+        },
+        {new: true} //return the updated information
+    ).select("-password")
+
+// returning the updated useData
+    res.status(200).json(
+        new ApiResponse(
+            200,
+            updatedUser,
+            "user data is successfully updated!"
+        )
+    )
+})
+
+
+const updateUserAvatar = asyncHandler( async(req, res, next) => {
+
+// Getting avatar from frontend
+    const avatarLocalPath = req.files?.avatar[0].path
+    // console.log(req.files.avatar[0])
+
+    if(!avatarLocalPath){
+        // fs.unlinkSync(req.file.avatarLocalPath[0].path)
+        // fs.unlinkSync(req.files.avatar[0].path)
+        throw new ApiError(400, "avatar not found in localStorage!")
+    }
+
+// Uploading it on cloudinary
+    const avatar = await uploadOnCloudinary(avatarLocalPath)
+
+    if(!avatar.url){
+        throw new ApiError(400, "Cannot upload avatar on cloudinary!")
+    }
+
+// Updating avatar in database
+    const userData = await User.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set: {
+                avatar: avatar.url
+            }
+        },
+        {new: true} // return the updated object/document
+    ).select("-password -refreshToken")
+
+// Returning the response 
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            userData,
+            "avatar successfully updated!"
+        )
+    )
+
+})
+
+
+const updateUserCoverImage = asyncHandler( async(req, res, next) => {
+
+// Getting avatar from frontend
+    const coverImageLocalPath = req.files?.coverImage[0].path
+
+    if(!coverImageLocalPath){
+        fs.unlinkSync(req.files.coverImage[0].path)
+        throw new ApiError(400, "coverImage not found in localStorage!")
+    }
+
+// Uploading it on cloudinary
+    const coverImage = await uploadOnCloudinary(coverImageLocalPath)
+
+    if(!coverImage.url){
+        throw new ApiError(400, "Cannot upload coverImage on cloudinary!")
+    }
+
+// Updating avatar in database
+    const userData = await User.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set: {
+                coverImage: coverImage.url
+            }
+        },
+        {new: true} // return the updated object/document
+    ).select("-password -refreshToken")
+
+// Returning the response 
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            userData,
+            "cover image successfully updated!"
+        )
+    )
+
+})
+
+
+export {registerUser, loginUser, logoutUser, refreshAccessToken, 
+        changeCurrentPassword, getCurrentUser, updateAccountDetails,
+        updateUserAvatar, updateUserCoverImage
+    }
 
