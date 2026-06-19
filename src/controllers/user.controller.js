@@ -9,6 +9,7 @@ import {User} from "../models/user.model.js"
 import {uploadOnCloudinary} from '../utils/cloudinary.js'
 
 import jwt from "jsonwebtoken"
+import mongoose from "mongoose"
 
 
 
@@ -19,7 +20,7 @@ const generateAccessAndRefreshToken = async(userId) => {    //We are not making 
         const refreshToken = user.generateRefreshToken()
 
         user.refreshToken = refreshToken
-        await user.save({validationBeforeSave: false})
+        await user.save({validatBeforeSave: false})
 
         return {accessToken, refreshToken}
 
@@ -159,14 +160,14 @@ const loginUser = asyncHandler( async(req, res, next) => {
     console.log(comparePassword)
 
     if(!comparePassword){
-        throw new ApiError(404, "Password is Incorrent!!")
+        throw new ApiError(401, "Password is Incorrent!!")
     }
 
 // Generate access and refresh token    
     const {refreshToken, accessToken } = await generateAccessAndRefreshToken(user._id)
     // console.log(accessToken)
 
-    const loggedInUser = await User.findById(user._id).select("-password, -refreshToken")
+    const loggedInUser = await User.findById(user._id).select("-password -refreshToken")
 
 
 //Sending Cookies
@@ -240,7 +241,7 @@ const refreshAccessToken = asyncHandler( async(req, res, next) => {
             process.env.REFRESH_TOKEN_SECRET
         )
     } catch (error) {
-        throw new ApiError()
+        throw new ApiError(401, "Invalid refresh token")
     }
 
 // Getting user data 
@@ -371,7 +372,7 @@ const updateUserAvatar = asyncHandler( async(req, res, next) => {
 
 
 // Getting avatar from frontend
-    const avatarLocalPath = req.files?.avatar[0].path
+    const avatarLocalPath = req.files?.avatar?.[0]?.path
     // console.log(req.files.avatar[0])
 
     if(!avatarLocalPath){
@@ -415,10 +416,10 @@ const updateUserCoverImage = asyncHandler( async(req, res, next) => {
     // TODO: DELETE OLD COVER IMAGE IN CLOUDINARY
 
 // Getting avatar from frontend
-    const coverImageLocalPath = req.files?.coverImage[0].path
+    const coverImageLocalPath = req.file?.path
 
     if(!coverImageLocalPath){
-        fs.unlinkSync(req.files.coverImage[0].path)
+        fs.unlinkSync(req.file.path)
         throw new ApiError(400, "coverImage not found in localStorage!")
     }
 
@@ -451,9 +452,142 @@ const updateUserCoverImage = asyncHandler( async(req, res, next) => {
 
 })
 
+const getUserChannelProfile = asyncHandler(async(req, res, next) => {
+    const {username} = req.params //This is the channel we only, this is not us(user). That's why we used params.
+    
+    if(username?.trim() === ""){
+        throw new ApiError(400, "Username is missing!")
+    }
+
+    const channel = await User.aggregate([
+        {
+            $match:{
+                username: username?.toLowerCase()
+            }
+        },
+        {
+            $lookup: {
+                from: "subscriptions",
+                localField: "_id",
+                foreignField: "channel",
+                as: "subscribers"
+            }
+        },
+        {
+            $lookup: {
+                from: "subscriptions",
+                localField: "_id",
+                foreignField: "subscriber",
+                as: "subscribedTo"
+            }
+        },
+        {
+            $addFields: {
+                subscribersCount: {
+                    $size: "$subscribers"
+                },
+                channelsSubscribedToCount: {
+                    $size: "$subscribedTo"
+                },
+                isSubscribed:{
+                    $cond:{
+                        if:{
+                            $in: [req.user?._id, "$subscribers.subscriber"]
+                        },
+                        then: true,
+                        else: false
+                    }
+                }
+            }
+        },
+        {
+            $project:{
+                fullName: 1,
+                username: 1,
+                subscribersCount: 1,
+                channelsSubscribedToCount:1,
+                isSubscribed: 1,
+                avatar: 1,
+                coverImage: 1,
+            }
+        }
+    ])
+
+    if(!channel?.length){
+        throw new ApiError(400, "Channel not found!")
+    }
+
+
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            channel[0],
+            "User channel fetched Successfully!"
+        )
+    )
+})
+
+const getWatchHistory = asyncHandler(async(req, res) => {
+    const user = await User.aggregate([
+        {
+            $match: {
+                _id: new mongoose.Types.ObjectId(req.user._id )
+            }
+        },
+        {
+            $lookup: {
+                from: "video",
+                localField: "watchHistory",
+                foreignField: "_id",
+                as: "watchHistory",
+
+                pipeline:[
+                    {
+                        $lookup: {
+                            from: "users",
+                            localField: "owner",
+                            foreignField: "_id",
+                            as: "owner",
+                            
+                            pipeline: {
+                                $project: {
+                                    fullName: 1,
+                                    username: 1,
+                                    avatar: 1
+                                }
+                            }
+                        },
+                    },
+
+                    {
+                        $addField: {
+                            owner:{
+                                $first: "$owner"
+                            }
+                        }
+                    }
+                ]
+            }
+        }
+    ])
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            user[0].watchHistory,
+            "Watch History Fetched Succesfully"
+        )
+    )
+})
+
 
 export {registerUser, loginUser, logoutUser, refreshAccessToken, 
         changeCurrentPassword, getCurrentUser, updateAccountDetails,
-        updateUserAvatar, updateUserCoverImage
+        updateUserAvatar, updateUserCoverImage, getUserChannelProfile,
+        getWatchHistory
     }
 
+
+ 
