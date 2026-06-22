@@ -2,8 +2,8 @@
     -mkdir db middlewares models routes utils.
 
 # Important Precautions:
-    Whenever you talk to database, wrap that code in try-catch/promises
-    Database is always in another continent - so always use async-await
+1.  Whenever you talk to database, wrap that code in try-catch/promises
+2.  Database is always in another continent - so always use async-await
 
 
 # What is IIFE?

@@ -52,7 +52,7 @@ No usernames are stored.
 
 > User collection
     {
-        _id: ObjectId("111"),
+        _id: ObjectId("555"),
         username: "mrbeast",
         fullName: "Mr Beast",
         avatar: "avatar.jpg",
@@ -62,25 +62,25 @@ No usernames are stored.
 > Subscription collection
     {
         subscriber: ObjectId("201"),
-        channel: ObjectId("111")
+        channel: ObjectId("555")
     }
     {
         subscriber: ObjectId("202"),
-        channel: ObjectId("111")
+        channel: ObjectId("555")
     }
     {
         subscriber: ObjectId("203"),
-        channel: ObjectId("111")
+        channel: ObjectId("555")
     }
 
 > And Mr Beast himself subscribes to 2 channels:
 
     {
-        subscriber: ObjectId("111"),
+        subscriber: ObjectId("555"),
         channel: ObjectId("301")
     }
     {
-        subscriber: ObjectId("111"),
+        subscriber: ObjectId("555"),
         channel: ObjectId("302")
     }
 
@@ -92,7 +92,7 @@ No usernames are stored.
 > After $match
   [
     {
-        _id: ObjectId("111"),
+        _id: ObjectId("555"),
         username: "mrbeast",
         fullName: "Mr Beast",
         avatar: "avatar.jpg",
@@ -102,22 +102,22 @@ No usernames are stored.
 > After first $lookup
   [
     {
-        _id: ObjectId("111"),
+        _id: ObjectId("555"),
         username: "mrbeast",
         fullName: "Mr Beast",
 
-        subscribers: [
+        subscribers: [     //$lookup explicitly added this field 
             {
                 subscriber: ObjectId("201"),
-                channel: ObjectId("111")
+                channel: ObjectId("555")
             },
             {
                 subscriber: ObjectId("202"),
-                channel: ObjectId("111")
+                channel: ObjectId("555")
             },
             {
                 subscriber: ObjectId("203"),
-                channel: ObjectId("111")
+                channel: ObjectId("555")
             }
         ]
     }
@@ -126,25 +126,25 @@ No usernames are stored.
 > After second $lookup
   [
     {
-        _id: ObjectId("111"),
+        _id: ObjectId("555"),
         username: "mrbeast",
 
         subscribers: [
-            { subscriber: ObjectId("201"), channel: ObjectId("111") },
-            { subscriber: ObjectId("202"), channel: ObjectId("111") },
-            { subscriber: ObjectId("203"), channel: ObjectId("111") }
+            { subscriber: ObjectId("201"), channel: ObjectId("555") },
+            { subscriber: ObjectId("202"), channel: ObjectId("555") },
+            { subscriber: ObjectId("203"), channel: ObjectId("555") }
         ],
 
         subscribedTo: [
-            { subscriber: ObjectId("111"), channel: ObjectId("301") },
-            { subscriber: ObjectId("111"), channel: ObjectId("302") }
+            { subscriber: ObjectId("555"), channel: ObjectId("301") },
+            { subscriber: ObjectId("555"), channel: ObjectId("302") }
         ]
     }
   ]
 > After $addFields
   [
     {
-        _id: ObjectId("111"),
+        _id: ObjectId("555"),
         username: "mrbeast",
 
         subscribersCount: 3,

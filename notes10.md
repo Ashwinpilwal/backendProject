@@ -1,4 +1,4 @@
-# Common Question: Why Try-Catch aroung jwt.verify(), it never retuen error. 
+# Common Question: Why Try-Catch around jwt.verify(), it never return error?
 
 >   Actually, jwt.verify() can definitely throw errors.
 Many people assume it always returns the decoded payload because they usually test with valid tokens.
@@ -32,9 +32,7 @@ JsonWebTokenError: invalid signature
 
 >   Modified token
 
-If someone changes even one character:
-
-abc.def.xyz
+If someone changes even one character: abc.def.xyz
 
 Throws: 
 JsonWebTokenError: invalid token

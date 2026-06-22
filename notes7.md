@@ -83,7 +83,7 @@ console.log(result);
 Output: Promise { 5 }
 Returns a Promise, not the final value.
 
->  In async function use await , and in sync function don't use it. Like we didn't use in generateAccessToken call. user.controller:16/17
+>  In async function use await , and in sync function don't use it. Like we didn't use "await" in generateAccessToken call. user.controller:16/17
 
 
 # Decoding Access Token:

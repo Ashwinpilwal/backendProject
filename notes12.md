@@ -1,7 +1,7 @@
 # Note:
-1. Aggregation Pipeline code directly goes to MongoDB, because don't do work in pipeline.
+1. Aggregation Pipeline code directly goes to MongoDB, because mongoose doesn't do work in pipeline.
 
->   That why we do:
+>   That's why we do:
     _id = new mongoose.Types.ObjectId(req.user._id )
 
     instead of: _id = req.user._id
@@ -12,7 +12,7 @@
     > means kahan se lookup karna ha,  
 
 
-# getWatchHistory returneddummy data: 
+# returned dummy data of getWatchHistory: 
 
 {
     _id: ObjectId("u1"),
@@ -46,3 +46,6 @@
         }
     ]
 }
+
+# Note:
+If two $lookup stages are placed one after another, the second $lookup does not automatically use the filtered data produced inside the first $lookup. However, if the second $lookup is nested within the first $lookup's pipeline, it operates on the documents already filtered by the first $lookup.

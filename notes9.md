@@ -1,4 +1,4 @@
-# Lets say we make refresh token(30day expiry) and access token(1day expiry), after 1 day we refresh token will itself generate access token and new refresh token, and it keep on going, every day new access and refresh token, they will never expire, it will cause issue
+# Lets say we make refresh token(30day expiry) and access token(1day expiry), after 1 day access token will expire and refresh token will itself generate access token and new refresh token, and it keep on going, every day new access and refresh token, they will never expire, will this cause an issue?
 
 >   If you do this:
 
@@ -106,7 +106,7 @@ until they logout or you revoke the session.
 
 Technically, you can. But it's less secure.
 
-Imagine using only one token
+Imagine using only one token:
 Refresh Token (30 days)
 
 Every request:

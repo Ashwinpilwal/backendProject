@@ -57,7 +57,26 @@ this.message = "new message" -----> We can do this, only after super(...)
 
         Now object exists. Now you can write this.message
 
+1. this object is actually created by the parent (Error) constructor. Until super() runs, this doesn't exist yet.
 
+>  Notice: Your ApiResponse class is different
+
+    class ApiResponse {
+        constructor(
+            statusCode,
+            data,
+            message = "Success"
+        ) {
+            this.statusCode = statusCode;
+            this.data = data;
+            this.message = message;
+        }
+    }
+
+Notice: class ApiResponse does not extend another class.
+
+So there is no parent constructor to call.
+That's why there is no super() at all.
 
 
 # videoSchema.plugin(mongooseAggregatePaginate), what is this shit?
@@ -114,7 +133,7 @@ this.message = "new message" -----> We can do this, only after super(...)
 >   userSchema.pre("save", ...) 
         means: Just before saving the user to the database, this function will run
 
->   We can call schema methods from any file, as long as you have the User model and a document instance.
+>   We can call schema methods from any file, as long as you have the User model and a document instance(basically declared on top).
     const user = await User.findOne({ username: "john" });
 
     The variable user now contains only John's document:
