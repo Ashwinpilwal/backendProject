@@ -61,9 +61,11 @@ router.route("/update-coverimage").patch(
     upload.single("coverImage"),
     updateUserCoverImage)  
 
+
+    
+router.route("/channel/:username").get(verifyJWT, getUserChannelProfile)
 // All above routes are tested
 
-router.route("/channel/:username").get(verifyJWT, getUserChannelProfile)
 router.route("/history").get(verifyJWT, getWatchHistory)
 
 

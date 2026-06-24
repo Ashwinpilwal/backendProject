@@ -61,8 +61,11 @@ const registerUser = asyncHandler ( async(req, res) => {
             (field) => !field || field?.trim() === ""    //"If field exists, call trim(). Otherwise, return undefined instead of throwing an error". What if field is "" or "   ".
         )
     ){
-        if(req.files?.avatar?.[0]?.path){ //Deleting the locally saved temporary file, as the operation gets failed
+        if(req.files?.avatar?.[0]?.path){ //Deleting the locally saved temporary avatar, as the operation gets failed
             fs.unlinkSync(req.files.avatar[0].path)
+        }
+        if(req.files?.coverImage?.[0]?.path){ //Deleting the locally saved temporary coverImage, as the operation gets failed
+            fs.unlinkSync(req.files.coverImage[0].path)
         }
         throw new ApiError(400, "All field are required!")
     }
@@ -82,9 +85,10 @@ const registerUser = asyncHandler ( async(req, res) => {
     const avatarLocalPath = req.files?.avatar?.[0]?.path  //multer gives res.files. Request went through middleware(multer) 
     const coverImageLocalPath = req.files?.coverImage?.[0]?.path  // cover Image is optional
 
-    console.log("Avatar: ", avatarLocalPath)
-    console.log("CoverImage: ", coverImageLocalPath)
+    // console.log("Avatar: ", avatarLocalPath)
+    // console.log("CoverImage: ", coverImageLocalPath)
 
+    console.log("Req.files: ", req.files)
 
     if(!avatarLocalPath){
         throw new ApiError(400, "avatar is required!")
@@ -121,7 +125,7 @@ const createdUser = await User.findById(user._id).select(
 if(!createdUser){
     throw new ApiError(500, "User not created")
 }
-console.log(createdUser)
+// console.log(createdUser)
 
 
 // return res  
