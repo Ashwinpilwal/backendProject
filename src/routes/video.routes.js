@@ -4,7 +4,7 @@ const router = Router()
 import { upload } from "../middlewares/multer.middleware.js";
 
 // Importing controller
-import {uploadVideo} from "../controllers/video.controller.js"
+import {deleteVideoById, getAllVideos, getVideoById, togglePublishStatus, updateVideo, uploadVideo} from "../controllers/video.controller.js"
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 
@@ -24,6 +24,26 @@ router.route("/postvideo").post(
     uploadVideo
 )
 
+router.route("/allvideos/:username").get(getAllVideos);
+
+router.route("/video/:videoId").get(getVideoById);
+
+router.route("/delete-video/:videoId").delete(
+    verifyJWT,
+    deleteVideoById
+);
+
+
+router.route("/change-publish-status/:videoId").patch(
+    verifyJWT,
+    togglePublishStatus
+);
+
+router.route("/updatevideo/:videoId").patch(
+    verifyJWT,
+    upload.single("thumbnail"),
+    updateVideo
+);
 
 
 export default router

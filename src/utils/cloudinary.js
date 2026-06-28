@@ -31,14 +31,21 @@ const uploadOnCloudinary  = async(localFilePath) => {
     }
 }
 
-// const uploadResult = await cloudinary.uploader
-//     .upload(
-//         'https://res.cloudinary.com/demo/image/upload/getting-started/shoes.jpg', {
-//             public_id: 'shoes',
-//         }
-//     )
-//     .catch((error) => {
-//         console.log(error);
-//     });
+const deleteFromCloudinary = async(publicId, resourceType = "image") => {
+    try{
+        if(!publicId) return null
+        const response = await cloudinary.uploader.destroy(
+            publicId, 
+            {
+                resource_type: resourceType
+            }
+        )
+        return response
 
-export {uploadOnCloudinary}
+    }catch(error){
+        console.log("Cloudinary Delete Error:", error);
+        return null;
+    }
+}
+
+export {uploadOnCloudinary, deleteFromCloudinary}
