@@ -9,6 +9,8 @@ import { pipeline } from "stream";
 import { subscribe } from "diagnostics_channel";
 import mongoose from "mongoose";
 import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
+import { Comment } from "../models/comment.model.js";
+import { Like } from "../models/like.model.js";
 
 const uploadVideo = asyncHandler( async(req, res) => {
 
@@ -353,14 +355,42 @@ const deleteVideoById = asyncHandler( async(req, res) => {
     }
 
     if(req.user?._id.toString() !== video?.owner.toString()){
-        throw new ApiError(200, "you are not the owner of this video!")
+        throw new ApiError(403, "you are not the owner of this video!")
     }
 
+   
+
+// Deleting all the comments and likes and *"likes on the comments" on this video 
+
+// Deleting all the likes on comments
+    const comments = await Comment.find({
+        video: videoId
+    }).select("_id")
+
+    const commentsIds = comments.map((comment) => comment._id)
+
+    await Like.deleteMany({
+        comment:{
+            $in: commentsIds
+        }
+    })
+
+// deleting all the likes on the video
+    await Like.deleteMany({
+        video: videoId
+    })
+
+// deleting all the comments on the video
+    await Comment.deleteMany({
+        video: videoId
+    })    
 
 // deleting video from database
     const response = await Video.findByIdAndDelete(videoId)
     // console.log(response)
 
+    
+// Sending response to use user
     if(!response){
         throw new ApiError(404, "video cannot be deleted")
     }
@@ -370,11 +400,12 @@ const deleteVideoById = asyncHandler( async(req, res) => {
     res.status(200).json(
         new ApiResponse(
             200,
-            [],
+            response ,
             "video deleted successfully"
         )
     )
 })
+
 
 
 const togglePublishStatus = asyncHandler( async(req, res) => {
