@@ -6,6 +6,16 @@ const playlistSchema = new mongoose.Schema({
         // unique: true,
         required: true
     },
+    coverImage: {
+        url: {
+            type: String,  //cloudinary url
+            required: true,
+        },
+        public_id: {
+            type: String,  //cloudinary public_id
+            required: true,
+        }
+    },
     description: {
         type: String,
         required: true

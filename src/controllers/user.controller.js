@@ -6,7 +6,7 @@ import {ApiError} from '../utils/ApiError.js'
 import {ApiResponse} from '../utils/ApiResponse.js'
 
 import {User} from "../models/user.model.js"
-import {uploadOnCloudinary} from '../utils/cloudinary.js'
+import {uploadOnCloudinary, deleteFromCloudinary} from '../utils/cloudinary.js'
 
 import jwt from "jsonwebtoken"
 import mongoose from "mongoose"
@@ -108,8 +108,14 @@ const registerUser = asyncHandler ( async(req, res) => {
 // create user object - create entry in db
     const user = await User.create({
         fullName,
-        avatar: avatar.url,
-        coverImage: coverImage?.url || "",
+        avatar: {
+            url: avatar.url,
+            public_id: avatar.public_id
+        },
+        coverImage: {
+            url: coverImage.url || "",
+            public_id: coverImage.public_id || ""
+        },
         email,
         password,
         username: username.toLowerCase()
@@ -375,7 +381,8 @@ const updateAccountDetails = asyncHandler(async(req, res, next) => {
 
 const updateUserAvatar = asyncHandler( async(req, res, next) => {
 
-    // TODO: DELETE OLD COVER IMAGE IN CLOUDINARY
+// TODO: DELETE OLD COVER IMAGE IN CLOUDINARY
+    const userAvatarPublicId = req.user?.avatar?.public_id
 
 
 // Getting avatar from frontend
@@ -400,11 +407,20 @@ const updateUserAvatar = asyncHandler( async(req, res, next) => {
         req.user?._id,
         {
             $set: {
-                avatar: avatar.url
+                avatar:{
+                    url: avatar.url,
+                    public_id: avatar.public_id
+                }
+
             }
         },
         {new: true} // return the updated object/document
     ).select("-password -refreshToken")
+
+// Deleting the old avatar from cloudinary
+    if(userAvatarPublicId){
+        await deleteFromCloudinary(userAvatarPublicId, "image")
+    }
 
 // Returning the response 
     return res.status(200).json(
@@ -420,7 +436,8 @@ const updateUserAvatar = asyncHandler( async(req, res, next) => {
 
 const updateUserCoverImage = asyncHandler( async(req, res, next) => {
 
-    // TODO: DELETE OLD COVER IMAGE IN CLOUDINARY
+// TODO: DELETE OLD COVER IMAGE IN CLOUDINARY
+    const userCoverImagePublicId = req.user?.coverImage?.public_id
 
 // Getting avatar from frontend
     const coverImageLocalPath = req.file?.path
@@ -442,11 +459,19 @@ const updateUserCoverImage = asyncHandler( async(req, res, next) => {
         req.user?._id,
         {
             $set: {
-                coverImage: coverImage.url
+                coverImage: {   
+                    url: coverImage.url,
+                    public_id: coverImage.public_id
+                }
             }
         },
         {new: true} // return the updated object/document
     ).select("-password -refreshToken")
+
+// Deleting the old avatar from cloudinary
+    if(userCoverImagePublicId){
+        await deleteFromCloudinary(userCoverImagePublicId, "image")
+    }
 
 // Returning the response 
     return res.status(200).json(

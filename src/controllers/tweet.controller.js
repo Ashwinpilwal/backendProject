@@ -123,26 +123,27 @@ const updateTweet = asyncHandler( async(req, res) => {
 
     
 // getting tweet details from dB
-    const tweet = await Tweet.findById(tweetId)
+    // const tweet = await Tweet.findById(tweetId)
 
-    if (!tweet) {
-        throw new ApiError(404, "Tweet not found");
-    }
+    // if (!tweet) {
+    //     throw new ApiError(404, "Tweet not found");
+    // }
 
 // Verifying the user
-    if(req.user._id.toString() !== tweet.owner.toString()){
-        throw new ApiError(403, "sorry you are not the owner of this tweet!")
-    }
+    // if(req.user._id.toString() !== tweet.owner.toString()){
+    //     throw new ApiError(403, "sorry you are not the owner of this tweet!")
+    // }
 
 
 // Updating the tweet
     // const updatedTweet = await Tweet.findOneAndUpdate(
-    const updatedTweet = await Tweet.findByIdAndUpdate(
+    const updatedTweet = await Tweet.findOneAndUpdate(
         
-        tweetId,
-        // {
-        //     _id: tweetId
-        // },
+        // tweetId,
+        {
+            _id: tweetId,
+            owner: req.user?._id
+        },
         {
             $set: {
                 content: newContent.trim()
@@ -152,6 +153,11 @@ const updateTweet = asyncHandler( async(req, res) => {
             new: true
         }
     )
+
+// if updatedTweet is null
+    if(!updatedTweet){
+        throw new ApiError(403, "you not the authorized user, cannot update in db!")
+    }
 
 
 // sending response to user

@@ -190,7 +190,7 @@ const limit = Number(req.query.limit) || 10
                             _id: 0,
                             username: 1,
                             fullName: 1,
-                            avatar: 1
+                            avatar: "$avatar.url"
                         }
                     }
                 ]
@@ -206,7 +206,7 @@ const limit = Number(req.query.limit) || 10
         {
             $project:{
                 _id: 1,
-                thumbnail: 1,
+                thumbnail: "$thumbnail.url",
                 title: 1,
                 description: 1,
                 views:1,
@@ -286,7 +286,7 @@ const getVideoById = asyncHandler( async(req, res) => {
                             username: 1,
                             fullName: 1,
                             // email: 1,
-                            avatar: 1, 
+                            avatar: "$avatar.url", 
                             // coverImage: 1,
                             // createdAt: 1
                         }
@@ -304,8 +304,8 @@ const getVideoById = asyncHandler( async(req, res) => {
         },
         {
             $project: {
-                videoFile: 1,
-                thumbnail: 1, // We dont need this, but sending in case if need this
+                videoFile: "$videoFile.url",
+                thumbnail: "$thumbnail.url", // We dont need this, but sending in case if need this
                 title: 1,
                 description: 1,
                 views: 1,
@@ -358,10 +358,12 @@ const deleteVideoById = asyncHandler( async(req, res) => {
         throw new ApiError(403, "you are not the owner of this video!")
     }
 
-   
+// Storing the public ids of video and thumbnail to delete them from cloudinary
+    const videoPublicId = video.videoFile.public_id
+    const thumbnailPublicId = video.thumbnail.public_id
+
 
 // Deleting all the comments and likes and *"likes on the comments" on this video 
-
 // Deleting all the likes on comments
     const comments = await Comment.find({
         video: videoId
@@ -395,6 +397,14 @@ const deleteVideoById = asyncHandler( async(req, res) => {
         throw new ApiError(404, "video cannot be deleted")
     }
 
+// Deleting video and thumbnail from cloudinary
+    if(videoPublicId){
+        await deleteFromCloudinary(videoPublicId, "video")
+    }
+    
+    if(thumbnailPublicId){
+        await deleteFromCloudinary(thumbnailPublicId, "image")
+    }
 
 // sending the response
     res.status(200).json(
@@ -486,7 +496,7 @@ const updateVideo = asyncHandler( async(req, res) => {
         
         oldThumbnail = video.thumbnail.public_id
         
-        console.log(oldThumbnail)
+        // console.log(oldThumbnail)
 
         console.log(req.file)
 
@@ -513,7 +523,7 @@ const updateVideo = asyncHandler( async(req, res) => {
         
     await video.save()
     const response1 = await deleteFromCloudinary(oldThumbnail, "image") // deleting the old thumbnail
-    console.log(response1)
+    // console.log(response1)
     
 
 // Sending the final response. 

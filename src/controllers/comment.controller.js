@@ -4,6 +4,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { Comment } from "../models/comment.model.js";
 import { Video } from "../models/video.model.js";
+import { Like } from "../models/like.model.js";
 
 const addComment = asyncHandler( async(req, res) => {
 // Taking input from user
@@ -48,29 +49,37 @@ const addComment = asyncHandler( async(req, res) => {
 
 const deleteComment = asyncHandler( async(req, res) => {
 // Taking input from user
-    const {commentId} = req.body 
+    const {commentId} = req.params 
 
 // Validing inputs sent by user
     if(!mongoose.Types.ObjectId.isValid(commentId)){
         throw new ApiError(400, "comment id is invalid")
     }
     
-    const comment = await Comment.findById(commentId)
-    if(!comment){
-        throw new ApiError(404, "comment not found")
-    } 
+    // const comment = await Comment.findById(commentId)
+    // if(!comment){
+    //     throw new ApiError(404, "comment not found")
+    // } 
 
 // Validating if comment is done by loggedin user or not
-    if(req.user?._id.toString() !== comment.owner.toString()){
-        throw new ApiError(403, "you are not the owner of this comment")
-    }
+    // if(req.user?._id.toString() !== comment.owner.toString()){
+    //     throw new ApiError(403, "you are not the owner of this comment")
+    // }
 
-// Adding comment to DB
-    const deletedComment = await Comment.findByIdAndDelete(commentId)
+// Deleting comment to DB
+    const deletedComment = await Comment.findOneAndDelete({
+        _id: commentId,
+        owner: req.user._id
+    })
 
     if(!deletedComment){
-        throw new ApiError(400, "comment cannot be deleted to DB!")
+        throw new ApiError(400, "unauthorized, comment cannot be deleted to DB!")
     }
+
+// Deleting all the likes on the comment
+    await Like.deleteMany({
+        comment: commentId
+    })
 
 // Sending response to frontend
     res.status(201).json(
@@ -178,7 +187,8 @@ const showAllComments = asyncHandler( async(req, res) => {
 
 const editComment = asyncHandler( async(req, res) => {
 // Taking input from user
-    const {commentId, content} = req.body 
+    const {content} = req.body 
+    const {commentId} = req.params 
 
 // Validing inputs sent by user
     if(!mongoose.Types.ObjectId.isValid(commentId)){
@@ -196,13 +206,16 @@ const editComment = asyncHandler( async(req, res) => {
     } 
 
 // Validating if comment is done by loggedin user or not
-    if(req.user?._id.toString() !== comment.owner.toString()){
-        throw new ApiError(403, "you are not the owner of this comment")
-    }
+    // if(req.user?._id.toString() !== comment.owner.toString()){
+    //     throw new ApiError(403, "you are not the owner of this comment")
+    // }
 
 // Adding comment to DB
-    const editedComment = await Comment.findByIdAndUpdate(
-        commentId,
+    const editedComment = await Comment.findOneAndUpdate(
+        {
+            _id: commentId,
+            owner: req.user._id
+        },
         {
             $set:{
                 content
