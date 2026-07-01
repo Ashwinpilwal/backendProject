@@ -254,7 +254,8 @@ const refreshAccessToken = asyncHandler( async(req, res, next) => {
             process.env.REFRESH_TOKEN_SECRET
         )
     } catch (error) {
-        throw new ApiError(401, "Invalid refresh token")
+        //if it is expired it will return error(catch will run)
+        throw new ApiError(401, "Invalid refresh token/or might be expired!")
     }
 
 // Getting user data 

@@ -13,20 +13,28 @@ export const verifyJWT = asyncHandler(async(req, _, next) => {
         throw new ApiError(401, "Unauthorized access from auth Middleware!")
     }
 
-// decoding token
-    const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
-    // console.log(decodedToken)
+    try{
+    // decoding token
+        const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
+        // console.log(decodedToken)
 
-// getting userData from token
-    const user = await User.findById(decodedToken?._id).select("-password -refreshToken")
+    // getting userData from token
+        const user = await User.findById(decodedToken?._id).select("-password -refreshToken")
 
-    if(!user){
+        if(!user){
+            throw new ApiError(401, "Invalid Access Token")
+        }
+        
+
+    // Adding userData to req object (our main goal of this middleware)
+        req.user = user
+
+        next()
+
+    }catch(error){
+        if(error.name === "TokenExpiredError"){
+            throw new ApiError(401, "Token has expired")
+        }
         throw new ApiError(401, "Invalid Access Token")
     }
-    
-
-// Adding userData to req object (our main goal of this middleware)
-    req.user = user
-
-    next()
 })
