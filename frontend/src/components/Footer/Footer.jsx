@@ -22,7 +22,7 @@ const Footer = () => {
         <p>Copyright © {new Date().getFullYear()} - All rights reserved</p>
       </aside>
 
-      <nav className="flex flex-row gap-4 gap-4 md:place-self-center md:justify-self-end text-white">
+      <nav className="flex flex-row gap-4 md:place-self-center md:justify-self-end text-white">
         <a className="cursor-pointer hover:text-gray-400 transition-colors">
           <svg
             xmlns="http://www.w3.org/2000/svg"
