@@ -63,10 +63,11 @@ router.route("/update-coverimage").patch(
 
 
     
+// router.route("/channel/:username").get(verifyJWT, getUserChannelProfile)
 router.route("/channel/:username").get(verifyJWT, getUserChannelProfile)
-// All above routes are tested
 
 router.route("/history").get(verifyJWT, getWatchHistory)
+// All above routes are tested
 
 
 export default router

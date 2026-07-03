@@ -26,11 +26,11 @@ const Header = () => {
 
     const userStatus = useSelector((state) => state.auth.status)
     const userData = useSelector((state) => state.auth.userData)
-    console.log(userData)
+    // console.log(userData)
 
     return (
         <>
-            <div className='flex flex-row justify-between items-center p-4 bg-[#090909] text-white'>
+            <div className='flex flex-row justify-between items-center p-2 bg-[#090909] text-white border-b-1'>
 
                 <NavLink to="/" className={ (isActive) => isActive ? ' flex items-center gap-4' : 'bg-[#494949] flex items-center gap-4' } >
                     <img src="/VideoPlayerLogo.png" alt="" className='w-10 h-10'/>
@@ -65,7 +65,7 @@ const Header = () => {
 
                             <button
                             type="submit"
-                            className="absolute right-1 top-1/2 -translate-y-1/2 px-5 py-2 rounded-full bg-[#d00a0a] text-white hover:bg-[#861414] transition"
+                            className="absolute right-1 top-1/2 -translate-y-1/2 px-5 py-2 rounded-full bg-[#d00a0a] text-white hover:bg-[#861414] cursor-pointer transition"
                             >
                             Search
                             </button>
@@ -77,12 +77,17 @@ const Header = () => {
                 <div className='flex flex-row gap-10 items-center relative'>
                     {userStatus ? (
                         <>
-                            <button onClick={handleLogout}>Logout</button>
+                            <button onClick={handleLogout} className='px-2 py-1 rounded-sm font-semibold bg-[#d00a0a] hover:bg-[#861414] cursor-pointer transition '>Logout</button>
                         </>
                     ) : (
                         <>
-                            <NavLink to="/login" className={ (isActive) => isActive ? 'bg-[#1b1a1a]' : 'bg-[#494949]' }>Login</NavLink>
-                            <NavLink to="/signup" className={ (isActive) => isActive ? 'bg-[#1b1a1a]' : 'bg-[#494949]' }>Signup</NavLink>
+                            <div className='flex gap-4 px-4 py-1 rounded-full bg-[#444444]'>
+                                <Link to="/login" className='hover:text-[#ababab] transition'>Login</Link>
+
+                                <div className="w-px h-6 bg-[#989898]"></div>
+
+                                <Link to="/signup" className='hover:text-[#ababab] transition'>Signup</Link>
+                            </div>
                         </>
                     )}
                     <img 
@@ -108,14 +113,14 @@ const Header = () => {
                                     </div>
                                 </div>
                                 <div>
-                                    <Link to="/profile" className='text-sm text-blue-400'>View you profile</Link>
+                                    <Link to={`/profile/${userData?.user?.username}`} className='text-sm text-blue-400'>View you profile</Link>
                                 </div>
                             </div>
 
                             <div className="w-full h-px bg-[#c5c5c5] my-2"></div>
 
                             <div className='flex flex-col gap-6'>
-                                <NavLink to="/profile" className='flex items-center gap-2'>
+                                <NavLink to={`/profile/${userData?.user?.username}`} className='flex items-center gap-2'>
                                     <img src="/sideboxprofile.png" className='w-6 h-6' alt="" />
                                     <p>Profile</p>
                                 </NavLink>

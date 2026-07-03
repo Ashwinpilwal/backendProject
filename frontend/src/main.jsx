@@ -12,6 +12,7 @@ import Login from './pages/Login.jsx'
 import Signup from './pages/Signup.jsx'
 import store from './store/store.js' 
 import { Provider } from 'react-redux'
+import AuthInitializer from './components/AuthInitializer.jsx'
 
 
 import { createBrowserRouter, Route, RouterProvider } from 'react-router-dom'
@@ -30,10 +31,10 @@ const router = createBrowserRouter([
       },
 
       {
-        path: "/profile",  //Profile
+        path: "/profile/:username",  //Profile
         element: 
         <AuthLayout authentication = {true}>
-          <Profile/>,
+          <Profile/>
         </AuthLayout>
       },
 
@@ -95,7 +96,9 @@ const router = createBrowserRouter([
 createRoot(document.getElementById('root')).render(
 
   <Provider store={store}>
-    <RouterProvider router={router}/>
+    <AuthInitializer>
+      <RouterProvider router={router}/>
+    </AuthInitializer>
   </Provider>
 
 )

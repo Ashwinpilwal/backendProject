@@ -52,3 +52,18 @@ http://localhost:8000/api/v1
 withCredentials: true
 
 over and over.
+
+
+
+# Image Styling Note:
+
+    <img
+        src="/your-image.jpg"
+        alt=""
+        className="w-full h-100 object-cover"
+    />
+
+> Difference:
+1. object-cover   // Crops the image to fill the container (what you want)
+2. object-contain // Shows the whole image, may leave empty space
+3. object-fill    // Stretches the image (looks bad)

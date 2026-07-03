@@ -2,7 +2,7 @@ import React from 'react'
 
 const Upload = () => {
   return (
-    <div>
+    <div className='font-bold text-white p-4'>
       Upload
     </div>
   )

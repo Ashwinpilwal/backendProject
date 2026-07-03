@@ -6,10 +6,10 @@ const Home = () => {
     const user = useSelector((state) => state.auth.userData)
 
   return (
-    <div>
+    <div className='font-bold text-white p-4'>
       <h1>Home</h1>
-      <h2>{user?.username}</h2>
-      <p>{user?.email}</p>
+      <h2>{user?.user?.username}</h2>
+      <p>{user?.user?.email}</p>
     </div>
   )
 }

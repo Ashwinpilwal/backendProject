@@ -2,7 +2,7 @@ import React from 'react'
 
 const WatchHistory = () => {
   return (
-    <div>
+    <div className='font-bold text-white p-4'>
       watch history
     </div>
   )

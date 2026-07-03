@@ -61,7 +61,11 @@ const subscribeChannelToggle = asyncHandler( async(req, res) => {
 
 // Returning the final response
     res.status(200).json(
-        new ApiResponse(200, "Successfully Subscribed!")
+        new ApiResponse(
+            200, 
+            subscribed,
+            "Successfully Subscribed!"
+        )
     )
 })
 
