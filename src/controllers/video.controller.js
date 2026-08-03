@@ -104,6 +104,67 @@ const uploadVideo = asyncHandler( async(req, res) => {
 
 })
 
+const getEveryUserVideos = asyncHandler( async(req, res) => {
+    const page = Number(req.query.page) || 1
+    const limit = Number(req.query.limit) || 20
+
+    const aggregate = Video.aggregate([
+        {
+            $match:{
+                isPublished: true
+            }
+        },
+        {
+            $sample: {
+                size: 1000
+            }
+        },
+        {
+            $lookup: {
+                from: "users",
+                localField: "owner",
+                foreignField: "_id",
+                as: "owner"
+            }
+        },
+        {
+            $unwind: "$owner"
+        },
+        {
+            $project: {
+                title: 1,
+                description: 1,
+                thumbnail: 1,
+                videoFile: 1,
+                views: 1,
+                createdAt: 1,
+
+                "owner._id": 1,
+                "owner.username": 1,
+                "owner.fullName": 1,
+                "owner.avatar": 1
+            }   
+            
+        }
+    ])
+
+    const selectedVideos = await Video.aggregatePaginate(
+        aggregate,
+        {
+            page,
+            limit
+        }
+    )
+
+    res.status(200).json(
+        new ApiResponse(
+            200,
+            selectedVideos,
+            "all videos are fetched"
+        )
+    )
+
+})
 
 const getAllVideos = asyncHandler( async(req, res) => {
   
@@ -539,4 +600,4 @@ const updateVideo = asyncHandler( async(req, res) => {
 
 
 
-export {uploadVideo, getAllVideos, getVideoById, deleteVideoById, togglePublishStatus, updateVideo}
+export {uploadVideo, getEveryUserVideos, getAllVideos, getVideoById, deleteVideoById, togglePublishStatus, updateVideo}

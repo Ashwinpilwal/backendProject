@@ -32,15 +32,15 @@ const Header = () => {
         <>
             <div className='flex flex-row justify-between items-center p-2 bg-[#090909] text-white border-b-1'>
 
-                <NavLink to="/" className={ (isActive) => isActive ? ' flex items-center gap-4' : 'bg-[#494949] flex items-center gap-4' } >
-                    <img src="/VideoPlayerLogo.png" alt="" className='w-10 h-10'/>
+                <NavLink to="/" className={ (isActive) => isActive ? ' flex items-center gap-4' : 'bg-[#494949] flex items-center gap-3' } >
+                    <img src="/VideoPlayerLogo.png" alt="" className='w-8 h-8'/>
                     <p className='font-bold'>Video Player</p>
                 </NavLink>
 
                 <div className='flex flex-row gap-10'>
                     {/* <NavLink to="/" className={ (isActive) => isActive ? 'bg-[#1b1a1a]' : 'bg-[#494949]'  } >Home</NavLink> */}
                     
-                    <form className="w-full max-w-lg mx-auto">
+                    <form className="w-[30vw] mx-auto">
                         <div className="relative">
                             <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -60,12 +60,12 @@ const Header = () => {
                             <input
                             type="search"
                             placeholder="Search videos..."
-                            className="w-full h-12 pl-12 pr-28 rounded-full bg-zinc-900 border border-zinc-700 text-white placeholder-gray-400 outline-none focus:border-red-500 transition"
+                            className="w-full h-8 pl-12 pr-28 rounded-full bg-zinc-900 border border-zinc-700 text-white placeholder-gray-400 outline-none focus:border-red-500 transition"
                             />
 
                             <button
                             type="submit"
-                            className="absolute right-1 top-1/2 -translate-y-1/2 px-5 py-2 rounded-full bg-[#d00a0a] text-white hover:bg-[#861414] cursor-pointer transition"
+                            className="absolute right-0 top-1/2 -translate-y-1/2 px-5 py-1 rounded-full bg-[#d00a0a] text-white hover:bg-[#861414] cursor-pointer transition"
                             >
                             Search
                             </button>
@@ -91,7 +91,7 @@ const Header = () => {
                         </>
                     )}
                     <img 
-                    src={userData?.user?.avatar?.url ? userData?.user?.avatar?.url : 'profile.png'}
+                    src={userData?.avatar?.url ? userData?.avatar?.url : 'profile.png'}
                     className={`${open? 'border-2':'border-0'} w-12 h-12 rounded-full`}
                     alt=""
                     onClick={() => setOpen(!open)} />
@@ -103,24 +103,24 @@ const Header = () => {
                                 <div className='flex flex-row gap-2'> 
                                     <div>
                                         <img 
-                                        src={userData?.user?.avatar?.url ? userData?.user?.avatar?.url : 'profile.png'}
+                                        src={userData?.avatar?.url ? userData?.avatar?.url : 'profile.png'}
                                         alt=""
                                         className='w-12 h-12 rounded-full' />
                                     </div>
                                     <div>
-                                        <p>@{userData?.user?.username}</p>
-                                        <p>{userData?.user?.fullName}</p>
+                                        <p>@{userData?.username}</p>
+                                        <p>{userData?.fullName}</p>
                                     </div>
                                 </div>
                                 <div>
-                                    <Link to={`/profile/${userData?.user?.username}`} className='text-sm text-blue-400'>View you profile</Link>
+                                    <Link to={`/profile/${userData?.username}`} className='text-sm text-blue-400'>View you profile</Link>
                                 </div>
                             </div>
 
                             <div className="w-full h-px bg-[#c5c5c5] my-2"></div>
 
                             <div className='flex flex-col gap-6'>
-                                <NavLink to={`/profile/${userData?.user?.username}`} className='flex items-center gap-2'>
+                                <NavLink to={`/profile/${userData?.username}`} className='flex items-center gap-2'>
                                     <img src="/sideboxprofile.png" className='w-6 h-6' alt="" />
                                     <p>Profile</p>
                                 </NavLink>

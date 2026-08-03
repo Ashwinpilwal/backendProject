@@ -9,5 +9,17 @@
 # What is IIFE?
     That pattern is called an Immediately Invoked Function Expression (IIFE) — and because of async, more specifically an async IIFE. This immediately calls function.
 
+    Basic Structure:
+
+    (function () {
+        // code here
+    })();
+
+    Or using an arrow function:
+
+    (() => {
+        // code here
+    })();
+
 # NOTE:
     After making some changes in .env, we have to manually restart server...

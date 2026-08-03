@@ -15,7 +15,7 @@ function App() {
 
       <Header/>
 
-      <main className='flex  flex-1 bg-[#585368]'>
+      <main className='flex  flex-1 bg-[#121212]'>
         {/* <div className='min-w-[15vw] bg-[#121212]'></div> */}
         <LeftSidebar/>
         <Outlet/>
